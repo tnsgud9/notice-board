@@ -1,6 +1,7 @@
 import { Response, Request } from "express";
 import { SignupInfo } from "../../types/auth";
 import AccountModel, { PermissionState } from "../../models/account.model";
+import bcrypt from "bcrypt";
 
 export const SignUp = async (req: Request, res: Response) => {
   const { password, username, id } = req.body as SignupInfo;
@@ -12,7 +13,7 @@ export const SignUp = async (req: Request, res: Response) => {
     where: { id },
     defaults: {
       id,
-      password,
+      password: bcrypt.hashSync(password, 12),
       username,
       permission: PermissionState.user,
     },

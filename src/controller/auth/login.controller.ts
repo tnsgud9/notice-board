@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { LoginInfo } from "../../types/auth";
 import AccountModel from "../../models/account.model";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 export const Login = async (req: Request, res: Response) => {
   const { id, password } = req.body as LoginInfo;
@@ -9,11 +10,11 @@ export const Login = async (req: Request, res: Response) => {
   if (!id || !password)
     return res.status(400).json("Need to Login Info (ID, Password)");
   // do action login process
-  const account = (await AccountModel.findOne({
-    where: { id, password },
-  }).catch(() =>
-    res.status(400).json("ID or password does not match")
-  )) as AccountModel;
+  const account = await AccountModel.findOne({ where: { id } });
+  if (!account) return res.status(400).json("ID does not exist");
+
+  if (!bcrypt.compareSync(password, account.dataValues.password))
+    return res.status(400).json("Password does not match.");
 
   const token = jwt.sign(
     {
