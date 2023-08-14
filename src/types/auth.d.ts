@@ -7,3 +7,11 @@ export type SignupInfo = {
   password: string;
   username: string;
 };
+export type TokenInfo = {
+  index: number;
+  id: string;
+  ip: string;
+  expiresIn: string;
+  issuer: string;
+  type: string;
+};
